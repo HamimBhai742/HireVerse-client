@@ -5,12 +5,13 @@ import useAuth from "../../hooks/useAuth";
 import { ImSpinner3 } from "react-icons/im";
 import { use, useState } from "react";
 import toast from "react-hot-toast";
-
+import animatinData from "../../lottieFiles/register.json";
+import Lottie from "lottie-react";
 
 const API_KEY = import.meta.env.VITE_IMAGE_API_KEY;
 const Hosting = `https://api.imgbb.com/1/upload?key=${API_KEY}`;
 const Registration = () => {
-  const [load,setLoad]=useState(false)
+  const [load, setLoad] = useState(false);
   const {
     user,
     setUser,
@@ -26,49 +27,49 @@ const Registration = () => {
     register,
     handleSubmit,
     // formState: { errors },
-  } = useForm()
-  const navigate=useNavigate()
+  } = useForm();
+  const navigate = useNavigate();
   const onSubmit = async (data) => {
-    setLoad(true)
-    console.log(data)
+    setLoad(true);
+    console.log(data);
     const imgeFile = { image: data.photo[0] };
-    console.log(imgeFile)
-        const res = await axios.post(Hosting, imgeFile, {
+    console.log(imgeFile);
+    const res = await axios.post(Hosting, imgeFile, {
       headers: {
         "content-type": "multipart/form-data",
       },
     });
     console.log(res.data.data.display_url);
     const img = res.data.data.display_url;
-    if(img){
+    if (img) {
       createUser(data.email, data.password)
-      .then((result) => {
-        const user = result.user;
-        console.log(user);
-        // const userInfo = {
-        //   displayName: data.name,
-        //   photoURL: img,
-        // };
-        updateUserProfile(data.name, img)
-          .then(() => {
-            console.log("profile updated", user);  
-            setUser(user);
-            toast.success("Registration successful")
-            navigate('/login')
-            logOut()
-            setLoad(false)
-          })
-          .catch((error) => {
-            setLoad(false)
-            toast.error(error.message);
-          });
-      })
+        .then((result) => {
+          const user = result.user;
+          console.log(user);
+          // const userInfo = {
+          //   displayName: data.name,
+          //   photoURL: img,
+          // };
+          updateUserProfile(data.name, img)
+            .then(() => {
+              console.log("profile updated", user);
+              setUser(user);
+              toast.success("Registration successful");
+              navigate("/login");
+              logOut();
+              setLoad(false);
+            })
+            .catch((error) => {
+              setLoad(false);
+              toast.error(error.message);
+            });
+        })
         .catch((error) => {
-        setLoad(false)
-        toast.error(error.message);
-      }); 
+          setLoad(false);
+          toast.error(error.message);
+        });
     }
-  }
+  };
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-5">
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">
@@ -217,12 +218,8 @@ const Registration = () => {
             <span className="w-1/5 border-b  md:w-1/4"></span>
           </div>
         </div>
-        <div
-          className="hidden bg-cover bg-center lg:block lg:w-1/2"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1606660265514-358ebbadc80d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1575&q=80')`,
-          }}
-        ></div>
+
+        <Lottie animationData={animatinData} loop={true} autoPlay={true} />
       </div>
     </div>
   );

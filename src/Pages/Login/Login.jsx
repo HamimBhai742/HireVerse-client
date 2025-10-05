@@ -4,40 +4,42 @@ import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { ImSpinner3 } from "react-icons/im";
+import Lottie from "lottie-react";
+import animationData from "../../lottieFiles/lo.json";
 
 const Login = () => {
-  const { register, handleSubmit } = useForm()
+  const { register, handleSubmit } = useForm();
   const { signIn } = useAuth();
-  const navigate = useNavigate()  
-    const [load, setLoad] = useState(false);
+  const navigate = useNavigate();
+  const [load, setLoad] = useState(false);
   const onSubmit = (data) => {
-    setLoad(true)
-    console.log(data) 
+    setLoad(true);
+    console.log(data);
     signIn(data.email, data.password)
-    .then((result) => {
-      const user = result.user;
-      console.log(user);
-      navigate('/')
-      setLoad(false)
-      toast.success("Login successful")
-    })
-    .catch((error) => {
-      console.log(error);
-      setLoad(false)
-      toast.error(error.message)  
-    });   
-
-  }
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        navigate("/");
+        setLoad(false);
+        toast.success("Login successful");
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoad(false);
+        toast.error(error.message);
+      });
+  };
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-5">
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">
-        <div
-          className="hidden bg-cover bg-center lg:block lg:w-1/2"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1606660265514-358ebbadc80d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1575&q=80')`,
-          }}
-        ></div>
+        <div>
+          <Lottie
 
+            animationData={animationData}
+            loop={true}
+            autoPlay={true}
+          />
+        </div>
         <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
           <div className="flex justify-center mx-auto">
             <img

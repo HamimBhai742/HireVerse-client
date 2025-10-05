@@ -1,11 +1,95 @@
+import { useQuery } from "@tanstack/react-query";
+import useAuth from "../../hooks/useAuth";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import TableDataRow from "./TableDataRow";
+import Swal from "sweetalert2";
 const BidRequests = () => {
+  const { user } = useAuth();
+  const axiosPublic = useAxiosPublic();
+  const { data: bidsRequests = [], refetch } = useQuery({
+    enabled: !!user?.email,
+    queryKey: ["bid-requests"],
+    queryFn: async () => {
+      const res = await axiosPublic.get(`/bid-requests/${user?.email}`);
+      return res.data;
+    },
+  });
+  console.log(bidsRequests);
+  const handelAcceptBtn = (id) => {
+    console.log(id);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want accept this bid!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, accept it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+
+          const res = await axiosPublic.patch(`/update-bid-request/${id}`,{status:"Accepted"});
+          if (res.data.acknowledged) {
+            refetch();
+            Swal.fire({
+              title: "Accepted!",
+              text: "Your bid has been accepted.",
+              icon: "success",
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          Swal.fire({
+            title: "Failed!",
+            text: "Your bid has been accepted failed.",
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
+  const handelRejectBtn = (id) => {
+    console.log(id);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want reject this bid!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, reject it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axiosPublic.patch(`/update-bid-request/${id}`,{status:"Rejected"});
+          if (res.data.acknowledged) {
+            refetch();
+            Swal.fire({
+              title: "Rejected!",
+              text: "Your bid has been rejected.",
+              icon: "success",
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          Swal.fire({
+            title: "Failed!",
+            text: "Your bid has been rejected failed.",
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
   return (
     <section className="container px-4 mx-auto pt-12">
       <div className="flex items-center gap-x-3">
         <h2 className="text-lg font-medium text-gray-800 ">Bid Requests</h2>
 
         <span className="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full ">
-          05 Requests
+          {bidsRequests?.length > 9 ? "" : 0}
+          {bidsRequests?.length} Requests
         </span>
       </div>
 
@@ -69,75 +153,14 @@ const BidRequests = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 ">
-                  <tr>
-                    <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                      Build Dynamic Website
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                      example@gmail.com
-                    </td>
-
-                    <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                      10/04/2024
-                    </td>
-
-                    <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                      $200
-                    </td>
-                    <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="flex items-center gap-x-2">
-                        <p
-                          className="px-3 py-1 rounded-full text-blue-500 bg-blue-100/60
-                           text-xs"
-                        >
-                          Web Development
-                        </p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                      <div className="inline-flex items-center px-3 py-1 rounded-full gap-x-2 bg-yellow-100/60 text-yellow-500">
-                        <span className="h-1.5 w-1.5 rounded-full bg-yellow-500"></span>
-                        <h2 className="text-sm font-normal ">Pending</h2>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="flex items-center gap-x-6">
-                        <button className="text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-5 h-5"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="m4.5 12.75 6 6 9-13.5"
-                            />
-                          </svg>
-                        </button>
-
-                        <button className="text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-5 h-5"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  {bidsRequests.map((bidRequest) => (
+                    <TableDataRow
+                      key={bidRequest._id}
+                      bidRequest={bidRequest}
+                      handelAcceptBtn={handelAcceptBtn}
+                      handelRejectBtn={handelRejectBtn}
+                    />
+                  ))}
                 </tbody>
               </table>
             </div>
